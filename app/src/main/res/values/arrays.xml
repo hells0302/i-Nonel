@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="novel_site">
+        <item>选择小说首发网站</item>
+        <item>起点</item>
+    </string-array>
+</resources>
