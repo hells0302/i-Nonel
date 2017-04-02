@@ -15,6 +15,10 @@
             android:id="@+id/nav_add"
             android:icon="@drawable/ic_add_circle_white_36dp"
             android:title="添加小说" />
+        <item
+            android:id="@+id/nav_del"
+            android:icon="@drawable/ic_remove_circle_outline_white_36dp"
+            android:title="删除小说" />
         <item android:id="@+id/nav_change_theme"
             android:title="切换日夜模式"
             android:icon="@drawable/ic_brightness_4_white_36dp"

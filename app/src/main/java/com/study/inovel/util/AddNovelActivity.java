@@ -1,7 +1,5 @@
 package com.study.inovel.util;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -17,9 +15,6 @@ import android.widget.Toast;
 import com.study.inovel.R;
 import com.study.inovel.db.DatabaseUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by dnw on 2017/4/1.
  */
@@ -31,7 +26,7 @@ public class AddNovelActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layoout_add_novel);
+        setContentView(R.layout.layout_add_novel);
 
         initView();
         //initSpinner();
@@ -82,17 +77,23 @@ public class AddNovelActivity extends AppCompatActivity {
                     Toast.makeText(AddNovelActivity.this,"此小说已经添加过",Toast.LENGTH_SHORT).show();
                 }else
                 {
+                    //此处未添加检测小说是否为本网站首发
                     if(databaseUtil.addLinkToDatabase(et.getText().toString().trim(),Constant.QIDIANLINK+et.getText().toString().trim()))
                     {
-
-                        Toast.makeText(AddNovelActivity.this,"添加成功",Toast.LENGTH_SHORT).show();
-
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(AddNovelActivity.this,"添加成功",Toast.LENGTH_SHORT).show();
+                                et.setText("");
+                            }
+                        });
                     }
+                }
+
+
                 }
 
             }
         }
 
     }
-
-}

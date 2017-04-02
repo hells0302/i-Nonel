@@ -19,6 +19,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "id integer primary key autoincrement,"
                 + "novel_name text,"
                 + "url text)");
+        sqLiteDatabase.execSQL("create table if not exists novel_info_link("
+                + "id integer primary key autoincrement,"
+                + "novel_name text,"
+                + "url text)");
     }
 
     @Override

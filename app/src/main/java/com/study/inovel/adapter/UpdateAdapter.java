@@ -1,6 +1,7 @@
 package com.study.inovel.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.study.inovel.R;
 import com.study.inovel.bean.Book;
+import com.study.inovel.util.NetworkState;
 
 import java.util.List;
 

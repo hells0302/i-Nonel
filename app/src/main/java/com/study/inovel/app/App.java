@@ -1,12 +1,14 @@
 package com.study.inovel.app;
 
 import android.app.Application;
+import android.content.Context;
 import android.support.v7.app.AppCompatDelegate;
 
 /**
  * Created by dnw on 2017/4/1.
  */
 public class App extends Application {
+    private static Context context;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -16,5 +18,10 @@ public class App extends Application {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
+        context=getApplicationContext();
+    }
+    public static Context getContext()
+    {
+        return context;
     }
 }

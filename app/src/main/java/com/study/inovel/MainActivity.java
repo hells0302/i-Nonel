@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -25,11 +26,14 @@ import com.study.inovel.db.DatabaseUtil;
 import com.study.inovel.settings.SettingsPreferenceActivity;
 import com.study.inovel.util.AddNovelActivity;
 import com.study.inovel.util.Constant;
+import com.study.inovel.util.DelNovelActivity;
 import com.study.inovel.util.HtmlParserUtil;
 import com.study.inovel.util.NetworkState;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private ListView listView;
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private DatabaseUtil databaseUtil;
     List<Book> list=new ArrayList<>();
+    private boolean refreshFlag;
     private Handler handler=new Handler()
     {
         @Override
@@ -85,11 +90,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-        refresh();
+    protected void onResume() {
+        super.onResume();
+        updateNovelInfoLink();
     }
+
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -138,17 +143,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_add:
                 startActivity(new Intent(MainActivity.this,AddNovelActivity.class));
                 break;
+            case R.id.nav_del:
+                startActivity(new Intent(MainActivity.this,DelNovelActivity.class));
+                break;
         }
         return true;
     }
 
     public void update(View view)
     {
-        refresh();
+        updateNovelInfoLink();
     }
     public void refresh()
     {
-        int count=databaseUtil.getNovelLinkCount();
+
+        int count=databaseUtil.getNovelInfoLinkCount();
         if(list.size()>0)
         {
             list.clear();
@@ -158,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(MainActivity.this,"还未添加小说，请先添加小说",Toast.LENGTH_SHORT).show();
         }else
         {
-            if(NetworkState.networkConnected(MainActivity.this))
+            if(NetworkState.networkConnected(MainActivity.this)&&(NetworkState.wifiConnected(MainActivity.this)||NetworkState.mobileDataConnected(MainActivity.this)))
             {
                 new Thread(new Runnable() {
                     @Override
@@ -176,16 +185,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 }
                             });
                         }
-                        List<String> list1=databaseUtil.getNovelLinkElement();
-                        for(int i=0;i<list1.size();i++)
+                        List<String> list12= databaseUtil.getNovelInfoLinkElement();
+                        for(int i=0;i<list12.size();i++)
                         {
-                            String tmp= HtmlParserUtil.getNovelLink(list1.get(i));
-                            Book book=HtmlParserUtil.getUpdateInfo("http:"+tmp);
+                            Book book=HtmlParserUtil.getUpdateInfo(list12.get(i));
                             list.add(book);
                         }
                         handler.sendEmptyMessage(0x123);
                     }
                 }).start();
+
             }else
             {
                 Toast.makeText(MainActivity.this,"无网络连接，请检查...",Toast.LENGTH_SHORT).show();
@@ -193,5 +202,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
 
+    }
+    public void updateNovelInfoLink()
+    {
+        if(databaseUtil.getNovelLinkCount()==0)
+        {
+            databaseUtil.delNovelInfoLinkElement();
+            refresh();
+        }
+        if(databaseUtil.getNovelInfoLinkCount()!=databaseUtil.getNovelLinkCount())
+        {
+            databaseUtil.delNovelInfoLinkElement();
+            if(NetworkState.networkConnected(MainActivity.this)&&(NetworkState.wifiConnected(MainActivity.this)||NetworkState.mobileDataConnected(MainActivity.this)))
+            {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Map<String,String> map;
+                        Iterator iterator;
+                        List<Map<String,String>> listLinks=databaseUtil.getNovelLinkElement();
+                        for(int i=0;i<listLinks.size();i++){
+                            map=listLinks.get(i);
+                            iterator=map.keySet().iterator();
+                            String name=(String)iterator.next();
+                            String tmpUrl1=map.get(name);
+                            String tmpUrl2=HtmlParserUtil.getNovelLink(tmpUrl1);
+                            databaseUtil.addLinkToNovelInfoLink(name,"http:"+tmpUrl2);
+                        }
+                    refresh();
+                    }
+                }).start();
+
+            }
+        }else
+        {
+            refresh();
+        }
     }
 }
