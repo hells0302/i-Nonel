@@ -27,7 +27,7 @@
             android:background="@drawable/add_novel_stroke"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="请输入要小说名"/>
+            android:hint="请输入要添加的小说名"/>
         <Spinner
             android:layout_marginTop="10dp"
             android:background="@drawable/add_novel_stroke"

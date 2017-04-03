@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.study.inovel.bean.Book;
+import com.study.inovel.bean.CacheBook;
 import com.study.inovel.util.HtmlParserUtil;
 
 import java.util.ArrayList;
@@ -34,6 +35,13 @@ public class DatabaseUtil {
         }
         return databaseUtil;
     }
+
+    /**
+     * 添加想要跟踪的小说到数据库
+     * @param novelName
+     * @param url
+     * @return
+     */
     public boolean addLinkToDatabase(String novelName,String url)
     {
         ContentValues values=new ContentValues();
@@ -42,6 +50,13 @@ public class DatabaseUtil {
         db.insert("novel_link",null,values);
         return true;
     }
+
+    /**
+     * 获取到的小说详情链接存储到数据库
+     * @param novelName
+     * @param url
+     * @return
+     */
     public boolean addLinkToNovelInfoLink(String novelName,String url)
     {
         ContentValues values=new ContentValues();
@@ -50,6 +65,30 @@ public class DatabaseUtil {
         db.insert("novel_info_link",null,values);
         return true;
     }
+
+    /**
+     * 缓存到数据库
+     * @param novelName
+     * @param author
+     * @param update
+     * @param time
+     * @return
+     */
+    public boolean cacheToNovelCache(String novelName,String author,String update,String time)
+    {
+        ContentValues values=new ContentValues();
+        values.put("novel_name",novelName);
+        values.put("author",author);
+        values.put("updateTitle",update);
+        values.put("updateTime",time);
+        db.insert("novel_cache",null,values);
+        return true;
+    }
+
+    /**
+     * 获取所添加的小说数量
+     * @return
+     */
     public int getNovelLinkCount()
     {
         String sql="select count(*) from novel_link";
@@ -59,6 +98,11 @@ public class DatabaseUtil {
         cursor.close();
         return count;
     }
+
+    /**
+     * 取小说详情链接的数量
+     * @return
+     */
     public int getNovelInfoLinkCount()
     {
         String sql="select count(*) from novel_info_link";
@@ -68,6 +112,11 @@ public class DatabaseUtil {
         cursor.close();
         return count;
     }
+
+    /**
+     * 获取添加的小说list
+     * @return
+     */
     public List<Map<String,String>> getNovelLinkElement()
     {
         List<Map<String,String>> list=new ArrayList<>();
@@ -86,6 +135,11 @@ public class DatabaseUtil {
         cursor.close();
         return list;
     }
+
+    /**
+     * 获取获取的小说详情链接list
+     * @return
+     */
     public List<String> getNovelInfoLinkElement()
     {
         List<String> list=new ArrayList<>();
@@ -100,6 +154,11 @@ public class DatabaseUtil {
         cursor.close();
         return list;
     }
+
+    /**
+     * 获取添加的小说链接
+     * @return
+     */
     public List<String> getNovelNameElement()
     {
         List<String> list=new ArrayList<>();
@@ -113,7 +172,30 @@ public class DatabaseUtil {
         }
         return list;
     }
+    public List<CacheBook> getNovelCacheElement()
+    {
+        List<CacheBook> list=new ArrayList<>();
+        Cursor cursor=db.query("novel_cache",null,null,null,null,null,null,null);
+        if(cursor.moveToFirst())
+        {
+            do {
+                CacheBook book=new CacheBook();
+                book.cacheBookName=cursor.getString(cursor.getColumnIndex("novel_name"));
+                book.cacheAuthor=cursor.getString(cursor.getColumnIndex("author"));
+                book.cacheUpdateTitle=cursor.getString(cursor.getColumnIndex("updateTitle"));
+                book.cacheUpdateTime=cursor.getString(cursor.getColumnIndex("updateTime"));
 
+                list.add(book);
+            }while(cursor.moveToNext());
+        }
+        return list;
+    }
+
+    /**
+     * 删除数据库中添加的小说
+     * @param novelName
+     * @return
+     */
     public boolean delNovelLinkElement(String novelName)
     {
         int deleteRow=db.delete("novel_link","novel_name=?",new String[]{novelName});
@@ -121,11 +203,26 @@ public class DatabaseUtil {
             return true;
         return false;
     }
+
+    /**
+     * 删除cache数据库链接
+     * @return
+     */
+    public boolean delAllNovelCacheElement()
+    {
+        db.delete("novel_cache",null,null);
+        return true;
+    }
     public boolean delNovelInfoLinkElement()
     {
         db.delete("novel_info_link",null,null);
         return true;
     }
+    /**
+     * 判断小说是否存在
+     * @param novelName
+     * @return
+     */
     public boolean isExist(String novelName)
     {
         Cursor cursor=db.query("novel_link",null,"novel_name=?",new String[]{novelName},null,null,null);
@@ -136,6 +233,12 @@ public class DatabaseUtil {
         cursor.close();
         return false;
     }
+
+    /**
+     * 判断小说链接是否存在
+     * @param novelName
+     * @return
+     */
     public boolean isNovelInfoExist(String novelName)
     {
         Cursor cursor=db.query("novel_info_link",null,"novel_name=?",new String[]{novelName},null,null,null);

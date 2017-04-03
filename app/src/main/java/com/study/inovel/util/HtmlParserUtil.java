@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.study.inovel.app.App;
 import com.study.inovel.bean.Book;
+import com.study.inovel.bean.CacheBook;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -50,6 +51,27 @@ public class HtmlParserUtil {
             //获取更新状态
             book.updateTitle=doc.select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap").select("div.book-state").select("ul").select("li").get(1).select("a.blue").attr("title");
             book.updateTime=doc.select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap").select("div.book-state").select("ul").select("li").get(1).select("em").text();
+            return book;
+        }catch(Exception e)
+        {
+            //Toast.makeText(App.getContext(),"网络连接差，请重试...",Toast.LENGTH_SHORT).show();
+        }
+        return null;
+    }
+    public static CacheBook getCacheUpdateInfo(String url)
+    {
+        Connection conn= Jsoup.connect(url);
+        try {
+            //获取到整个网页
+            CacheBook book=new CacheBook();
+            Document doc=conn.timeout(10000).get();
+            //获取书名
+            book.cacheBookName=doc.select("div.book-detail-wrap").select("div.book-information").select("div.book-info").first().select("h1").select("em").text();
+            //获取作者
+            book.cacheAuthor=doc.select("div.book-detail-wrap").select("div.book-information").select("div.book-info").first().select("h1").select("a").text();
+            //获取更新状态
+            book.cacheUpdateTitle=doc.select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap").select("div.book-state").select("ul").select("li").get(1).select("a.blue").attr("title");
+            book.cacheUpdateTime=doc.select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap").select("div.book-state").select("ul").select("li").get(1).select("em").text();
             return book;
         }catch(Exception e)
         {

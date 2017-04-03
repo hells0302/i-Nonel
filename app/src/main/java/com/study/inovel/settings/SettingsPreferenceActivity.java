@@ -1,5 +1,7 @@
 package com.study.inovel.settings;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +19,11 @@ public class SettingsPreferenceActivity  extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_setting);
         initView();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        PrefFragment prefFragment = new PrefFragment();
+        transaction.add(R.id.frameLayout, prefFragment);
+        transaction.commit();
     }
     private void initView() {
         setSupportActionBar((Toolbar) findViewById(R.id.setting_toolbar));

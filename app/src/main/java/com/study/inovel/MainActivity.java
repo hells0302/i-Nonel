@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -26,6 +27,7 @@ import com.study.inovel.about.About;
 import com.study.inovel.adapter.UpdateAdapter;
 import com.study.inovel.bean.Book;
 import com.study.inovel.db.DatabaseUtil;
+import com.study.inovel.service.CacheService;
 import com.study.inovel.settings.SettingsPreferenceActivity;
 import com.study.inovel.util.AddNovelActivity;
 import com.study.inovel.util.Constant;
@@ -69,7 +71,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listView.setAdapter(adapter);
         databaseUtil=DatabaseUtil.getInstance(this);
         mNavigationView.setNavigationItemSelectedListener(this);
-
+        startCacheService();
+    }
+    private void startCacheService()
+    {
+        Intent intentStart=new Intent(this, CacheService.class);
+        startService(intentStart);
     }
     private void initView()
     {
@@ -163,6 +170,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void update(View view)
     {
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
+        Log.d("88888888888",sharedPreferences.getString("time_of_refresh",""));
         updateNovelInfoLink();
     }
     public void refresh()

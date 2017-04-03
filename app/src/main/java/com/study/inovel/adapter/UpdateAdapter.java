@@ -1,6 +1,8 @@
 package com.study.inovel.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +24,7 @@ import java.util.List;
 public class UpdateAdapter extends BaseAdapter{
     public Context context;
     public List<Book> bookUpdateList;
+    SharedPreferences sharedPreferences;
     public UpdateAdapter(Context context, List<Book> list) {
         this.context=context;
         this.bookUpdateList=list;
@@ -44,9 +47,11 @@ public class UpdateAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        sharedPreferences=PreferenceManager.getDefaultSharedPreferences(context);
         Book book=(Book) getItem(position);
         ViewHolder holder;
         View view;
+        UpdateAdapter.this.notifyDataSetChanged();
         if(convertView==null)
         {
             view=LayoutInflater.from(context).inflate(R.layout.book_item,null);
@@ -63,13 +68,22 @@ public class UpdateAdapter extends BaseAdapter{
             view=convertView;
             holder=(ViewHolder) view.getTag();
         }
-        Picasso.with(context).load("https:"+book.imgUrl).into(holder.book_img);
+        if(!sharedPreferences.getBoolean("no_picture_mode",true))
+        {
+            holder.book_img.setVisibility(View.VISIBLE);
+            Picasso.with(context).load("https:"+book.imgUrl).into(holder.book_img);
+        }else
+        {
+            holder.book_img.setVisibility(View.GONE);
+        }
         holder.book_name.setText(book.bookName);
         holder.author.setText(book.author);
         holder.info.setText(book.info);
         holder.update_title.setText(book.updateTitle);
         holder.update_time.setText(book.updateTime);
-        return view;
+       return view;
+
+
     }
     class ViewHolder
     {

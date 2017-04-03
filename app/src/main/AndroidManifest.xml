@@ -3,6 +3,10 @@
     package="com.study.inovel">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.FLASHLIGHT"/>
     <application
         android:name=".app.App"
         android:allowBackup="true"
@@ -21,6 +25,8 @@
         <activity android:name=".settings.SettingsPreferenceActivity"/>
         <activity android:name=".util.DelNovelActivity"/>
         <activity android:name=".about.About"/>
+        <service android:name=".service.CacheService"/>
+        <receiver android:name=".broadcast.AlarmReceiver"/>
     </application>
 
 </manifest>
