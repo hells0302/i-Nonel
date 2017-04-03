@@ -9,17 +9,20 @@ import android.os.Message;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.study.inovel.about.About;
 import com.study.inovel.adapter.UpdateAdapter;
 import com.study.inovel.bean.Book;
 import com.study.inovel.db.DatabaseUtil;
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private DatabaseUtil databaseUtil;
     List<Book> list=new ArrayList<>();
-    private boolean refreshFlag;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private Handler handler=new Handler()
     {
         @Override
@@ -51,10 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if(msg.what==0x123)
             {
                 Toast.makeText(MainActivity.this,"更新成功",Toast.LENGTH_SHORT).show();
-                if(pb.getVisibility()==View.VISIBLE)
-                {
-                    pb.setVisibility(View.GONE);
-                }
+                swipeRefreshLayout.setRefreshing(false);
                 adapter.notifyDataSetChanged();
             }
         }
@@ -64,6 +64,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_main);
+        initView();
+        adapter=new UpdateAdapter(MainActivity.this,list);
+        listView.setAdapter(adapter);
+        databaseUtil=DatabaseUtil.getInstance(this);
+        mNavigationView.setNavigationItemSelectedListener(this);
+
+    }
+    private void initView()
+    {
         pb=(ProgressBar)findViewById(R.id.pb);
         listView=(ListView)findViewById(R.id.listView);
         drawerLayout=(DrawerLayout)findViewById(R.id.drawer_layout);
@@ -79,14 +88,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     drawerLayout.openDrawer(GravityCompat.START);
                 }
             });
-        adapter=new UpdateAdapter(MainActivity.this,list);
-        listView.setAdapter(adapter);
-        databaseUtil=DatabaseUtil.getInstance(this);
-        mNavigationView.setNavigationItemSelectedListener(this);
-//        if(list.size()==0)
-//        {
-//            refresh();
-//        }
+        swipeRefreshLayout=(SwipeRefreshLayout)findViewById(R.id.refreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                updateNovelInfoLink();
+            }
+        });
     }
 
     @Override
@@ -146,6 +154,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_del:
                 startActivity(new Intent(MainActivity.this,DelNovelActivity.class));
                 break;
+            case R.id.nav_about:
+                startActivity(new Intent(MainActivity.this,About.class));
+                break;
         }
         return true;
     }
@@ -156,7 +167,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     public void refresh()
     {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        });
         int count=databaseUtil.getNovelInfoLinkCount();
         if(list.size()>0)
         {
@@ -164,6 +180,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         if(count==0)
         {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(false);
+                    adapter.notifyDataSetChanged();
+                }
+            });
             Toast.makeText(MainActivity.this,"还未添加小说，请先添加小说",Toast.LENGTH_SHORT).show();
         }else
         {
@@ -175,15 +198,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         if(list.size()>0)
                         {
                             list.clear();
-                        }
-                        if(pb.getVisibility()==View.GONE)
-                        {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    pb.setVisibility(View.VISIBLE);
-                                }
-                            });
                         }
                         List<String> list12= databaseUtil.getNovelInfoLinkElement();
                         for(int i=0;i<list12.size();i++)
@@ -238,5 +252,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             refresh();
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch(event.getAction())
+        {
+            case MotionEvent.ACTION_MOVE:
+
+                break;
+        }
+        return true;
     }
 }

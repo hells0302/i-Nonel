@@ -1,27 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-   >
+    >
     <android.support.v7.widget.Toolbar
         android:gravity="center_vertical"
-        android:id="@+id/delNovel_toolbar"
+        android:id="@+id/setting_toolbar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="?attr/colorPrimary"
         android:theme="@style/AppTheme.AppBarOverlay"
-        app:title="    删除小说">
+        app:title="    设置">
     </android.support.v7.widget.Toolbar>
-    <ListView
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:id="@+id/del_list"
-        android:dividerHeight="8dp"
-        android:divider="@null"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+
 
 </LinearLayout>

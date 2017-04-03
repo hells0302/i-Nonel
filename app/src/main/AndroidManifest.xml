@@ -20,6 +20,7 @@
         <activity android:name=".util.AddNovelActivity"/>
         <activity android:name=".settings.SettingsPreferenceActivity"/>
         <activity android:name=".util.DelNovelActivity"/>
+        <activity android:name=".about.About"/>
     </application>
 
 </manifest>
