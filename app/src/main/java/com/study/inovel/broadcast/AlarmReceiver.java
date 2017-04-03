@@ -12,8 +12,8 @@ import com.study.inovel.service.CacheService;
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        //时间到后再次启动service
-        Intent i=new Intent(context, CacheService.class);
-        context.startService(i);
+            //时间到后再次启动service
+            Intent i=new Intent(context, CacheService.class);
+            context.startService(i);
     }
 }

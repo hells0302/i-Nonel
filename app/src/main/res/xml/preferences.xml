@@ -29,10 +29,10 @@
             android:defaultValue="false"
             android:summary="设置是否震动提醒" />
         <CheckBoxPreference
-            android:title="亮灯"
+            android:title="呼吸灯"
             android:key="light_mode"
             android:defaultValue="false"
-            android:summary="设置提醒是否亮灯" />
+            android:summary="设置呼吸灯闪烁提醒" />
 
     </PreferenceCategory>
 

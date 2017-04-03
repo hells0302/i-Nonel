@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if(msg.what==0x123)
             {
                 Toast.makeText(MainActivity.this,"更新成功",Toast.LENGTH_SHORT).show();
+                //隐藏processBar
                 swipeRefreshLayout.setRefreshing(false);
                 adapter.notifyDataSetChanged();
             }
@@ -73,17 +74,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.setNavigationItemSelectedListener(this);
         startCacheService();
     }
+
+    /**
+     * 开启服务
+     */
     private void startCacheService()
     {
         Intent intentStart=new Intent(this, CacheService.class);
         startService(intentStart);
     }
+
+    /**
+     * 初始化
+     */
     private void initView()
     {
-        pb=(ProgressBar)findViewById(R.id.pb);
         listView=(ListView)findViewById(R.id.listView);
         drawerLayout=(DrawerLayout)findViewById(R.id.drawer_layout);
         mNavigationView=(NavigationView)findViewById(R.id.nav_view);
+        //启动toolbar代替默认的toolbar
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if(toolbar!=null)
@@ -96,20 +105,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
         swipeRefreshLayout=(SwipeRefreshLayout)findViewById(R.id.refreshLayout);
+        //下拉刷新回调函数
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                //调用刷新函数
                 updateNovelInfoLink();
             }
         });
     }
 
+    /**
+     * 每次调用onReasume时刷新
+     */
     @Override
     protected void onResume() {
         super.onResume();
         updateNovelInfoLink();
     }
 
+    /**
+     * NavigationViewde item点击事件
+     * @param item
+     * @return
+     */
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -168,25 +187,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    /**
+     * 手动更新
+     * @param view
+     */
     public void update(View view)
     {
-        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
-        Log.d("88888888888",sharedPreferences.getString("time_of_refresh",""));
         updateNovelInfoLink();
     }
+
+    /**
+     * 刷新更新内容
+     */
     public void refresh()
     {
+        //更新UI
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 swipeRefreshLayout.setRefreshing(true);
             }
         });
+        //获取数据库中小说链接总数
         int count=databaseUtil.getNovelInfoLinkCount();
+        //更新时防止listview重复显示
         if(list.size()>0)
         {
             list.clear();
         }
+        //数据库中小说链接总数为0，说明未添加小说
         if(count==0)
         {
             runOnUiThread(new Runnable() {
@@ -199,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(MainActivity.this,"还未添加小说，请先添加小说",Toast.LENGTH_SHORT).show();
         }else
         {
+            //有网络是更新
             if(NetworkState.networkConnected(MainActivity.this)&&(NetworkState.wifiConnected(MainActivity.this)||NetworkState.mobileDataConnected(MainActivity.this)))
             {
                 new Thread(new Runnable() {
@@ -208,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         {
                             list.clear();
                         }
+                        //获取小说链接地址
                         List<String> list12= databaseUtil.getNovelInfoLinkElement();
                         for(int i=0;i<list12.size();i++)
                         {
@@ -226,13 +257,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     }
+
+    /**
+     * 根据添加的小说获取小说详情链接地址
+     */
     public void updateNovelInfoLink()
     {
+        //如果添加的小说数量为0，则表示已删除所有小说，清空数据库缓存
         if(databaseUtil.getNovelLinkCount()==0)
         {
             databaseUtil.delNovelInfoLinkElement();
             refresh();
         }
+        //当添加的小说总数和获取到的小说链接总数不同，说明再次添加小说或者删除小说，刷新
         if(databaseUtil.getNovelInfoLinkCount()!=databaseUtil.getNovelLinkCount())
         {
             databaseUtil.delNovelInfoLinkElement();
@@ -261,16 +298,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             refresh();
         }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch(event.getAction())
-        {
-            case MotionEvent.ACTION_MOVE:
-
-                break;
-        }
-        return true;
     }
 }

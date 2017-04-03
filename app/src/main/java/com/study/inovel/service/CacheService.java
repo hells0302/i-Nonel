@@ -44,6 +44,7 @@ public class CacheService extends Service {
             {
                 //此处比较两个列表是否相同
                 List<CacheBook> listDb=databaseUtil.getNovelCacheElement();
+                //循环比较
                 if(lastList.size()>0&&listDb.size()>0)
                 {
                     for(int i=0;i<lastList.size();i++)
@@ -55,7 +56,7 @@ public class CacheService extends Service {
                             //书名相同之后比较两书的更新时间，不同发出更新通知
                             if(book1.cacheBookName.equals(book2.cacheBookName))
                             {
-                                if(!book1.cacheUpdateTitle.equals(book2.cacheUpdateTime))
+                                if(!book1.cacheUpdateTime.equals(book2.cacheUpdateTime))
                                 {
                                     //此处发出更新通知
                                     Intent intent=new Intent(CacheService.this, MainActivity.class);
@@ -66,15 +67,18 @@ public class CacheService extends Service {
                                     builder.setWhen(System.currentTimeMillis());
                                     builder.setSmallIcon(R.drawable.notication_icon);
                                     builder.setContentIntent(pi);
+                                    //获取设置页的是否震动参数
                                     if(sharedPreferences.getBoolean("vibrator_mode",false))
                                     {
                                         builder.setDefaults(Notification.DEFAULT_VIBRATE);
                                     }
+                                    //获取设置页的呼吸灯是否闪烁参数
                                     if(sharedPreferences.getBoolean("light_mode",false))
                                     {
                                         builder.setDefaults(Notification.DEFAULT_LIGHTS);
                                     }
                                     Notification notification=builder.getNotification();
+                                    //注意每一条更新都要通知
                                     nm.notify(j,notification);
                                 }
                             }
@@ -103,7 +107,6 @@ public class CacheService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("9999999999999999","onStartCommand");
         if(sharedPreferences==null)
             sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         if(nm==null)
@@ -115,8 +118,11 @@ public class CacheService extends Service {
             @Override
             public void run() {
                 cacheRefresh();
+                handler.sendEmptyMessage(0x234);
             }
+
         }).start();
+
         AlarmManager manager=(AlarmManager)getSystemService(ALARM_SERVICE);
         long triggerAtTime= SystemClock.elapsedRealtime()+setHour*anHour;
         Intent i=new Intent(this,AlarmReceiver.class);
@@ -147,7 +153,7 @@ public class CacheService extends Service {
                         if(book!=null)
                             databaseUtil.cacheToNovelCache(book.cacheBookName,book.cacheAuthor,book.cacheUpdateTitle,book.cacheUpdateTime);
                     }
-                handler.sendEmptyMessage(0x234);
+
             }
         }
 

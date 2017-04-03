@@ -22,7 +22,7 @@ public class DatabaseUtil {
     public static final int VERSION=1;
     private SQLiteDatabase db;
     private static DatabaseUtil databaseUtil;
-    public DatabaseUtil(Context context)
+    private DatabaseUtil(Context context)
     {
         DatabaseHelper dbHelper=new DatabaseHelper(context,DB_NAME,null,VERSION);
         db=dbHelper.getWritableDatabase();
