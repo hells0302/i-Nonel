@@ -14,6 +14,7 @@ APP完全开源，所涉及的知识只是用来学习研究，不涉及商业�
 >项目地址：
 
 效果图如下所示：
+
 ![首页](img/homepage.png)  ![设置](img/navigationview.png)    ![添加小说](img/addnovel.png)
 ![删除小说](img/delnovel.png)    ![夜间模式](img/night.png)     ![设置](img/setting.png)
 ![无图模式](img/withoutpic.png)
