@@ -15,7 +15,7 @@
 ![无图模式](img/withoutpic.png)
 
 # 功能需求
-因为自己一直看小说，获取更新的问题之前也想过。
+因为自己一直看小说，获取更新的问题之前也想过。主要有以下几点需求：
 * 正确获取小说更新情况
 * 能够同时显示多个小说的更新情况
 * 可以保存小说列表以后自动获取
@@ -23,7 +23,7 @@
 * 夜间模式
 * 通知栏、震动、呼吸灯提醒
 
-以上几个需求主要涉及了UI，网络，数据存储，后台服务，传感器使用等
+以上几个功能主要涉及了UI，网络，数据存储，后台服务，传感器使用等
 
 # 可行性分析
 首要的问题是怎么获取小数更新数据。这里使用了开源框架Jsoup。[Jsoup官网](https://jsoup.org/)摘抄官网简介介绍一下
@@ -36,8 +36,8 @@
 * output tidy HTML
 jsoup is designed to deal with all varieties of HTML found in the wild; from pristine and validating, to invalid tag-soup; jsoup will create a sensible parse tree.
 
-通过Jsoup获取整个网页的数据，完后分析得到自己想要的数据。现阶段只做了一个小说网站的解析工作
-#UI
+通过Jsoup获取整个网页的数据，然后分析得到自己想要的数据。现阶段只做了一个小说网站的解析工作
+# UI
 实验室没有做UI涉及的，参考做前端的大神给的建议，自己完成UI。期间也使用PS修图获取颜色代码等。推荐大家一个网站，上面的图标做的非常好。
 > Material icons 
 > https://material.io/icons/
