@@ -36,7 +36,7 @@
 * output tidy HTML
 jsoup is designed to deal with all varieties of HTML found in the wild; from pristine and validating, to invalid tag-soup; jsoup will create a sensible parse tree.
 
-通过Jsoup获取整个网页的数据，然后分析得到自己想要的数据。现阶段只做了一个小说网站的解析工作
+通过Jsoup获取整个网页的数据，然后分析得到自己想要的数据。现阶段只做了一个小说网站的解析工作。小说封面图片的获取使用的开源框架picasso，加载图片非常快。
 # UI
 实验室没有做UI涉及的，参考做前端的大神给的建议，自己完成UI。期间也使用PS修图获取颜色代码等。推荐大家一个网站，上面的图标做的非常好。
 > Material icons 
