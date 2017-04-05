@@ -30,11 +30,11 @@ import java.util.List;
  * Created by dnw on 2017/4/3.
  */
 public class CacheService extends Service {
-    public static final int anHour=60*60*1000;
+    public static final int anMin=60*1000;
     private List<CacheBook> lastList;
     private DatabaseUtil databaseUtil=DatabaseUtil.getInstance(this);
     private NotificationManager nm;
-    private int setHour;
+    private int setMin;
     SharedPreferences sharedPreferences;
     Handler handler=new Handler()
     {
@@ -68,7 +68,7 @@ public class CacheService extends Service {
                                     builder.setSmallIcon(R.drawable.notication_icon);
                                     builder.setContentIntent(pi);
                                     //获取设置页的是否震动参数
-                                    if(sharedPreferences.getBoolean("vibrator_mode",false))
+                                    if(sharedPreferences.getBoolean("vibrator_mode",true))
                                     {
                                         builder.setDefaults(Notification.DEFAULT_VIBRATE);
                                     }
@@ -107,12 +107,13 @@ public class CacheService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("Test","onStartCommand");
         if(sharedPreferences==null)
             sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         if(nm==null)
             nm=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
-        setHour=Integer.parseInt(sharedPreferences.getString("time_of_refresh","1"));
+        setMin=Integer.parseInt(sharedPreferences.getString("time_of_refresh","120"));
         //时间间隔到后执行
         new Thread(new Runnable() {
             @Override
@@ -124,7 +125,7 @@ public class CacheService extends Service {
         }).start();
 
         AlarmManager manager=(AlarmManager)getSystemService(ALARM_SERVICE);
-        long triggerAtTime= SystemClock.elapsedRealtime()+setHour*anHour;
+        long triggerAtTime= SystemClock.elapsedRealtime()+setMin*anMin;
         Intent i=new Intent(this,AlarmReceiver.class);
         PendingIntent pi=PendingIntent.getBroadcast(this,0,i,0);
         int currentVersion=Build.VERSION.SDK_INT;

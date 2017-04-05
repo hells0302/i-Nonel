@@ -1,8 +1,10 @@
 package com.study.inovel;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,6 +21,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -35,6 +38,7 @@ import com.study.inovel.util.DelNovelActivity;
 import com.study.inovel.util.HtmlParserUtil;
 import com.study.inovel.util.NetworkState;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -68,8 +72,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_main);
         initView();
-        adapter=new UpdateAdapter(MainActivity.this,list);
-        listView.setAdapter(adapter);
         databaseUtil=DatabaseUtil.getInstance(this);
         mNavigationView.setNavigationItemSelectedListener(this);
         startCacheService();
@@ -89,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void initView()
     {
-        listView=(ListView)findViewById(R.id.listView);
+
         drawerLayout=(DrawerLayout)findViewById(R.id.drawer_layout);
         mNavigationView=(NavigationView)findViewById(R.id.nav_view);
         //启动toolbar代替默认的toolbar
@@ -104,6 +106,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     drawerLayout.openDrawer(GravityCompat.START);
                 }
             });
+        listView=(ListView)findViewById(R.id.listView);
+        adapter=new UpdateAdapter(MainActivity.this,list);
+        listView.setAdapter(adapter);
         swipeRefreshLayout=(SwipeRefreshLayout)findViewById(R.id.refreshLayout);
         //下拉刷新回调函数
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -111,6 +116,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onRefresh() {
                 //调用刷新函数
                 updateNovelInfoLink();
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d("Test",list.get(i).bookName);
+                    Uri uri=Uri.parse("https://m.baidu.com/s?from=1086k&word="+list.get(i).bookName);
+                    Intent intent1 = new Intent(Intent.ACTION_VIEW,uri);
+                        startActivity(intent1);
+
+
             }
         });
     }
@@ -299,4 +315,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             refresh();
         }
     }
+
+
 }

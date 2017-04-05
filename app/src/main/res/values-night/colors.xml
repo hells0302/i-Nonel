@@ -6,5 +6,5 @@
 
     <color name="textColorPrimary">#616161</color>
     <color name="viewBackground">#212a2f</color>
-
+    <color name="homeBackground">#585759</color>
 </resources>

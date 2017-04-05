@@ -11,12 +11,12 @@
             android:summary="首页不显示小说图片" />
 
         <ListPreference
-            android:title="刷新时间"
-            android:key="time_of_refresh"
-            android:entries="@array/time_to_refresh_pots"
-            android:dialogTitle="请选择刷新时间"
-            android:entryValues="@array/time_to_refresh"
-            android:defaultValue="6"/>
+                 android:title="刷新时间"
+        android:key="time_of_refresh"
+        android:entries="@array/time_to_refresh_pots"
+        android:dialogTitle="请选择刷新时间"
+        android:entryValues="@array/time_to_refresh"
+        android:defaultValue="60"/>
 
     </PreferenceCategory>
 
@@ -26,7 +26,7 @@
         <CheckBoxPreference
             android:title="震动"
             android:key="vibrator_mode"
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:summary="设置是否震动提醒" />
         <CheckBoxPreference
             android:title="呼吸灯"
