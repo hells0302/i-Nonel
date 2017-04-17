@@ -104,8 +104,10 @@ public class HtmlParserUtil {
             //获取作者
             book.cacheAuthor=doc.select("div.book-detail-wrap").select("div.book-information").select("div.book-info").first().select("h1").select("a").text();
             //获取更新状态
-            book.cacheUpdateTitle=doc.select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap").select("div.book-state").select("ul").select("li").get(1).select("a.blue").attr("title");
-            book.cacheUpdateTime=doc.select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap").select("div.book-state").select("ul").select("li").get(1).select("em").text();
+            book.cacheUpdateTitle=doc.select("div.wrap").select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap")
+                    .select("div.book-info-detail").select("div.book-state").select("ul").select("li.update").select("div.detail").select("p.cf").select("a.blue").attr("title");
+            book.cacheUpdateTime=doc.select("div.wrap").select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap")
+                    .select("div.book-info-detail").select("div.book-state").select("ul").select("li.update").select("div.detail").select("p.cf").select("em.time").text();
             return book;
         }catch(Exception e)
         {
