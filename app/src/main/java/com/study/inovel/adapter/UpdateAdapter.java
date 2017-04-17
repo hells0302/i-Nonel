@@ -48,7 +48,7 @@ public class UpdateAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         sharedPreferences=PreferenceManager.getDefaultSharedPreferences(context);
-        Book book=(Book) getItem(position);
+        //Book book=(Book) getItem(position);
         ViewHolder holder;
         View view;
         UpdateAdapter.this.notifyDataSetChanged();
@@ -71,19 +71,18 @@ public class UpdateAdapter extends BaseAdapter{
         if(!sharedPreferences.getBoolean("no_picture_mode",true))
         {
             holder.book_img.setVisibility(View.VISIBLE);
-            Picasso.with(context).load("https:"+book.imgUrl).into(holder.book_img);
+            Picasso.with(context).load("https:"+bookUpdateList.get(position).imgUrl).into(holder.book_img);
         }else
         {
             holder.book_img.setVisibility(View.GONE);
         }
-        holder.book_name.setText(book.bookName);
-        holder.author.setText(book.author);
-        holder.info.setText(book.info);
-        holder.update_title.setText(book.updateTitle);
-        holder.update_time.setText(book.updateTime);
+        holder.book_name.setText(bookUpdateList.get(position).bookName);
+        holder.author.setText(bookUpdateList.get(position).author);
+        Log.d("test12",bookUpdateList.get(position).updateTitle+bookUpdateList.get(position).updateTime);
+        holder.info.setText(bookUpdateList.get(position).info);
+        holder.update_title.setText(bookUpdateList.get(position).updateTitle);
+        holder.update_time.setText(bookUpdateList.get(position).updateTime);
        return view;
-
-
     }
     class ViewHolder
     {

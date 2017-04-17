@@ -14,17 +14,19 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".MainActivity" android:launchMode="singleTask">
+        <activity android:name=".MainActivity" android:configChanges="uiMode|keyboard|keyboardHidden|orientation|screenSize|fontScale"
+            android:launchMode="singleTask"
+          >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".util.AddNovelActivity"/>
-        <activity android:name=".settings.SettingsPreferenceActivity"/>
-        <activity android:name=".util.DelNovelActivity"/>
-        <activity android:name=".about.About"/>
+        <activity android:name=".util.AddNovelActivity" android:excludeFromRecents="true"/>
+        <activity android:name=".settings.SettingsPreferenceActivity" android:excludeFromRecents="true"/>
+        <activity android:name=".util.DelNovelActivity" android:excludeFromRecents="true"/>
+        <activity android:name=".about.About" android:excludeFromRecents="true"/>
         <service android:name=".service.CacheService"/>
         <receiver android:name=".broadcast.AlarmReceiver"/>
     </application>

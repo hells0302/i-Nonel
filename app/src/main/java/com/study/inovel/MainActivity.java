@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,7 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,AdapterView.OnItemClickListener{
     private ListView listView;
     private UpdateAdapter adapter;
     private ProgressBar pb;
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private DatabaseUtil databaseUtil;
     List<Book> list=new ArrayList<>();
+    private long exitTime = 0;// 点击两次退出程序
+
     private SwipeRefreshLayout swipeRefreshLayout;
     private Handler handler=new Handler()
     {
@@ -75,7 +78,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         databaseUtil=DatabaseUtil.getInstance(this);
         mNavigationView.setNavigationItemSelectedListener(this);
         startCacheService();
+        updateNovelInfoLink();
+
+
+
     }
+
+
 
     /**
      * 开启服务
@@ -118,17 +127,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 updateNovelInfoLink();
             }
         });
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("Test",list.get(i).bookName);
-                    Uri uri=Uri.parse("https://m.baidu.com/s?from=1086k&word="+list.get(i).bookName);
-                    Intent intent1 = new Intent(Intent.ACTION_VIEW,uri);
-                        startActivity(intent1);
-
-
-            }
-        });
+      listView.setOnItemClickListener(this);
     }
 
     /**
@@ -137,7 +136,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        updateNovelInfoLink();
+        //updateNovelInfoLink();
+        if(databaseUtil.getNovelLinkCount()!=databaseUtil.getNovelInfoLinkCount())
+        {
+            updateNovelInfoLink();
+        }
     }
 
     /**
@@ -218,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void refresh()
     {
         //更新UI
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -238,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void run() {
                     swipeRefreshLayout.setRefreshing(false);
+                    list.clear();
                     adapter.notifyDataSetChanged();
                 }
             });
@@ -254,6 +259,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         {
                             list.clear();
                         }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+
+                            }
+                        });
                         //获取小说链接地址
                         List<String> list12= databaseUtil.getNovelInfoLinkElement();
                         for(int i=0;i<list12.size();i++)
@@ -316,5 +328,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                Log.d("Test",list.get(i).bookName);
+                Uri uri=Uri.parse("https://m.baidu.com/s?from=1086k&word="+list.get(i).bookName);
+
+                Intent intent1 = new Intent(Intent.ACTION_VIEW,uri);
+                String title = "选择浏览器";
+                if(intent1.resolveActivity(getPackageManager())!=null)
+                {
+                    startActivity(Intent.createChooser(intent1,title));
+                }
+    }
+
+    /**
+     * 点击两次退出程序
+     */
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            exit();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    public void exit() {
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            Toast.makeText(getApplicationContext(), "再按一次退出程序",
+                    Toast.LENGTH_SHORT).show();
+            exitTime = System.currentTimeMillis();
+        } else {
+            finish();
+            System.exit(0);
+        }
+    }
 
 }

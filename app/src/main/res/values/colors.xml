@@ -6,4 +6,5 @@
     <color name="textColorPrimary">#616161</color>
     <color name="viewBackground">#e6e5eb</color>
     <color name="homeBackground">#e4e3eb</color>
+    <color name="updateTextColor">#997efc</color>
 </resources>

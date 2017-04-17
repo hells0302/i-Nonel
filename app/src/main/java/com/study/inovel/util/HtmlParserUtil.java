@@ -15,7 +15,9 @@ import org.jsoup.nodes.Element;
 /**
  * Created by dnw on 2017/3/31.
  */
+
 public class HtmlParserUtil {
+
     public static String getNovelLink(String url)
     {
         Connection conn= Jsoup.connect(url);
@@ -33,6 +35,35 @@ public class HtmlParserUtil {
         }
         return "";
     }
+    public static Book getInfo(String url)
+    {
+        Connection conn= Jsoup.connect(url);
+        Log.d("test","inok");
+        try {
+            //获取到整个网页
+            Book book=new Book();
+            Document doc=conn.timeout(10000).get();
+            //获取图片地址
+            book.imgUrl=doc.select("div.wrap").select("div.result-wrap").select("div.main-content-wrap").select("div.book-img-text").select("ul").select("li").get(0).select("div.book-img-box")
+                    .select("a[href]").first().getElementsByTag("img").attr("src");
+            //获取书名
+            book.bookName=doc.select("div.wrap").select("div.result-wrap").select("div.main-content-wrap").select("div.book-img-text").select("ul").select("li").get(0).select("div.book-mid-info").first().getElementsByTag("h4").select("cite.red-kw").text();
+            //获取作者
+            book.author=doc.select("div.wrap").select("div.result-wrap").select("div.main-content-wrap").select("div.book-img-text").select("ul").select("li").get(0).select("div.book-mid-info").select("p.author").select("a.name").text();
+            //获取简介
+            book.info=doc.select("div.wrap").select("div.result-wrap").select("div.main-content-wrap").select("div.book-img-text").select("ul").select("li").get(0).select("div.book-mid-info").select("p.intro").text();
+            //获取更新状态
+            book.updateTitle=doc.select("div.wrap").select("div.result-wrap").select("div.main-content-wrap").select("div.book-img-text").select("ul").select("li").get(0).select("div.book-mid-info").select("p.update").select("a[href]").text();
+            book.updateTime=doc.select("div.wrap").select("div.result-wrap").select("div.main-content-wrap").select("div.book-img-text").select("ul").select("li").get(0)
+                    .select("div.book-mid-info").select("p.update").select("span").text();
+            return book;
+        }catch(Exception e)
+        {
+            //Toast.makeText(App.getContext(),"网络连接差，请重试...",Toast.LENGTH_SHORT).show();
+        }
+
+        return null;
+    }
     public static Book getUpdateInfo(String url)
     {
         Connection conn= Jsoup.connect(url);
@@ -49,8 +80,11 @@ public class HtmlParserUtil {
             //获取简介
             book.info=doc.select("div.book-detail-wrap").select("div.book-information").select("div.book-info").first().select("p.intro").text();
             //获取更新状态
-            book.updateTitle=doc.select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap").select("div.book-state").select("ul").select("li").get(1).select("a.blue").attr("title");
-            book.updateTime=doc.select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap").select("div.book-state").select("ul").select("li").get(1).select("em").text();
+            book.updateTitle=doc.select("div.wrap").select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap")
+                    .select("div.book-info-detail").select("div.book-state").select("ul").select("li.update").select("div.detail").select("p.cf").select("a.blue").attr("title");
+
+            book.updateTime=doc.select("div.wrap").select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap")
+                    .select("div.book-info-detail").select("div.book-state").select("ul").select("li.update").select("div.detail").select("p.cf").select("em.time").text();
             return book;
         }catch(Exception e)
         {

@@ -8,12 +8,15 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.study.inovel.MainActivity;
@@ -61,11 +64,14 @@ public class CacheService extends Service {
                                     //此处发出更新通知
                                     Intent intent=new Intent(CacheService.this, MainActivity.class);
                                     PendingIntent pi=PendingIntent.getActivity(CacheService.this,0,intent,0);
-                                    Notification.Builder builder=new Notification.Builder(CacheService.this);
+                                    NotificationCompat.Builder builder=new NotificationCompat.Builder(CacheService.this);
                                     builder.setContentTitle(book2.cacheBookName+">>有更新");
                                     builder.setContentText(book2.cacheUpdateTitle+"  "+book2.cacheUpdateTime);
                                     builder.setWhen(System.currentTimeMillis());
-                                    builder.setSmallIcon(R.drawable.notication_icon);
+                                    builder.setSmallIcon(R.drawable.ic_fiber_new_white_36dp);
+                                    builder.setColor(Color.parseColor("#EAA935"));
+                                    builder.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.icon));
+                                    builder.setAutoCancel(true);
                                     builder.setContentIntent(pi);
                                     //获取设置页的是否震动参数
                                     if(sharedPreferences.getBoolean("vibrator_mode",true))
@@ -77,6 +83,11 @@ public class CacheService extends Service {
                                     {
                                         builder.setDefaults(Notification.DEFAULT_LIGHTS);
                                     }
+                                    if(sharedPreferences.getBoolean("sound_mode",false))
+                                    {
+                                        builder.setDefaults(Notification.DEFAULT_SOUND);
+                                    }
+
                                     Notification notification=builder.getNotification();
                                     //注意每一条更新都要通知
                                     nm.notify(j,notification);
@@ -107,6 +118,7 @@ public class CacheService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         Log.d("Test","onStartCommand");
         if(sharedPreferences==null)
             sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);

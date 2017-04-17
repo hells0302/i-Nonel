@@ -71,6 +71,7 @@
                     android:layout_gravity="bottom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/updateTextColor"
                     android:text="最近更新："/>
                 <TextView
                     android:layout_gravity="bottom"
@@ -78,6 +79,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
+                    android:textColor="@color/updateTextColor"
                     android:text="第三百零六章 难解"/>
             </LinearLayout>
 
@@ -90,12 +92,14 @@
                     android:layout_gravity="bottom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/updateTextColor"
                     android:text="更新时间："/>
                 <TextView
                     android:layout_gravity="bottom"
                     android:id="@+id/update_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/updateTextColor"
                     android:singleLine="true"
                     android:text="今天18:16更新"/>
             </LinearLayout>

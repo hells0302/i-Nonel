@@ -33,6 +33,11 @@
             android:key="light_mode"
             android:defaultValue="false"
             android:summary="设置呼吸灯闪烁提醒" />
+        <CheckBoxPreference
+            android:title="声音"
+            android:key="sound_mode"
+            android:defaultValue="false"
+            android:summary="设置声音提醒" />
 
     </PreferenceCategory>
 
