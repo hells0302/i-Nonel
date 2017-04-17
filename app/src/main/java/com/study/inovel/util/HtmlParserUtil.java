@@ -12,6 +12,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created by dnw on 2017/3/31.
  */
@@ -78,7 +81,12 @@ public class HtmlParserUtil {
             //获取作者
             book.author=doc.select("div.book-detail-wrap").select("div.book-information").select("div.book-info").first().select("h1").select("a").text();
             //获取简介
-            book.info=doc.select("div.book-detail-wrap").select("div.book-information").select("div.book-info").first().select("p.intro").text();
+            String info=doc.select("div.wrap").select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap")
+                    .select("div.book-info-detail").select("div.book-intro").select("p").text();
+            Pattern pattern=Pattern.compile("\\s+");//匹配一或多个空格
+            Matcher matcher=pattern.matcher(info);
+            book.info=matcher.replaceAll("");
+            //book.info=info.substring(info.lastIndexOf(" "),10);
             //获取更新状态
             book.updateTitle=doc.select("div.wrap").select("div.book-detail-wrap").select("div.book-content-wrap").select("div.left-wrap")
                     .select("div.book-info-detail").select("div.book-state").select("ul").select("li.update").select("div.detail").select("p.cf").select("a.blue").attr("title");
