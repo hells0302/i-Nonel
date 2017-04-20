@@ -8,9 +8,6 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
-
-import com.squareup.picasso.Picasso;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +21,12 @@ import libcore.io.DiskLruCache;
  * Created by dnw on 2017/4/20.
  */
 public class CacheUtil {
+    /**
+     * 获取磁盘路径
+     * @param context
+     * @param uniqueName
+     * @return
+     */
     public static File getDiskCacheDir(Context context, String uniqueName){
         String cachePath;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
@@ -34,6 +37,12 @@ public class CacheUtil {
         }
         return new File(cachePath + File.separator + uniqueName);
     }
+
+    /**
+     * 获取版本号
+     * @param context
+     * @return
+     */
     public static int getAppVersion(Context context) {
         try {
             PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
@@ -44,6 +53,11 @@ public class CacheUtil {
         return 1;
     }
 
+    /**
+     *
+     * @param key
+     * @return
+     */
     public static String hashKeyForDisk(String key) {
         String cacheKey;
         try {
@@ -68,6 +82,13 @@ public class CacheUtil {
         return sb.toString();
     }
 
+    /**
+     * 缓存到磁盘
+     * @param mDiskLruCache
+     * @param url
+     * @param bitmap
+     * @return
+     */
     public static boolean saveBitmap(DiskLruCache mDiskLruCache, String url, Bitmap bitmap)
     {
         String key = hashKeyForDisk(url);
@@ -87,6 +108,14 @@ public class CacheUtil {
 
         return false;
     }
+
+    /**
+     * 在磁盘中获取图片
+     * @param mDiskLruCache
+     * @param url
+     * @param imageView
+     * @return
+     */
     public static boolean getBitmap(DiskLruCache mDiskLruCache, String url, ImageView imageView)
     {
         try {

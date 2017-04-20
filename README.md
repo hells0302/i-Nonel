@@ -3,6 +3,163 @@
 > 你是否迫切的想要一款app获取小说的更新情况，并发出提醒？
 
 三天假期就快结束了，首先祝大家玩得开心。
+# 更新 增加图片缓存功能
+为了节省流量，在图片加载的增加缓存功能，这里使用的DiskLruCache缓存到本地存储，而未使用Picasso的自带缓存。<br>
+因为DiskLruCache不是包含在AndroidAPI中，需要手动下载<br>
+下载地址：
+[DiskLruCache类获取地址]( android.googlesource.com/platform/libcore/+/jb-mr2-release/luni/src/main/java/libcore/io/DiskLruCache.java)
+DiskLruCache具体使用在Android官方教程中说的很清楚，这里不再叙述。<br>
+这里是Android官网关于图片缓存的资料，包含内存缓存*Use a Memory Cache*和磁盘缓存*Use a Disk Cache*
+[android图片缓存官方资料](https://developer.android.com/topic/performance/graphics/cache-bitmap.html?)
+在小说更新详情UpdateAdapter类中，先判断本地缓存是否有图片，有图片则直接加载，无图片则从Picasso加载<br>
+```
+ //先判断磁盘缓存中是否有图片，有图片则直接加载，无图片则从Picasso加载
+            if(!CacheUtil.getBitmap(diskLruCache,"https:"+bookUpdateList.get(getPosition).imgUrl,holder.book_img))
+            {
+                Log.d("test","getBitmap with Picasso");
+                Picasso.with(context).load("https:"+bookUpdateList.get(position).imgUrl).into(holder.book_img,new com.squareup.picasso.Callback(){
+                    @Override
+                    public void onSuccess() {
+                        //获取图片并缓存到磁盘
+                        bitmap=((BitmapDrawable)holder.book_img.getDrawable()).getBitmap();
+                        CacheUtil.saveBitmap(diskLruCache,"https:"+bookUpdateList.get(getPosition).imgUrl,bitmap);
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
+            }
+```
+
+
+```
+
+/**
+ * Created by dnw on 2017/4/20.
+ */
+public class CacheUtil {
+    /**
+     * 获取磁盘路径
+     * @param context
+     * @param uniqueName
+     * @return
+     */
+    public static File getDiskCacheDir(Context context, String uniqueName){
+        String cachePath;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                || !Environment.isExternalStorageRemovable()) {
+            cachePath = context.getExternalCacheDir().getPath();
+        } else {
+            cachePath = context.getCacheDir().getPath();
+        }
+        return new File(cachePath + File.separator + uniqueName);
+    }
+
+    /**
+     * 获取版本号
+     * @param context
+     * @return
+     */
+    public static int getAppVersion(Context context) {
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            return info.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return 1;
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public static String hashKeyForDisk(String key) {
+        String cacheKey;
+        try {
+            final MessageDigest mDigest = MessageDigest.getInstance("MD5");
+            mDigest.update(key.getBytes());
+            cacheKey = bytesToHexString(mDigest.digest());
+        } catch (NoSuchAlgorithmException e) {
+            cacheKey = String.valueOf(key.hashCode());
+        }
+        return cacheKey;
+    }
+
+    private  static String bytesToHexString(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < bytes.length; i++) {
+            String hex = Integer.toHexString(0xFF & bytes[i]);
+            if (hex.length() == 1) {
+                sb.append('0');
+            }
+            sb.append(hex);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 缓存到磁盘
+     * @param mDiskLruCache
+     * @param url
+     * @param bitmap
+     * @return
+     */
+    public static boolean saveBitmap(DiskLruCache mDiskLruCache, String url, Bitmap bitmap)
+    {
+        String key = hashKeyForDisk(url);
+        try
+        {
+            DiskLruCache.Editor editor = mDiskLruCache.edit(key);
+            if(editor!=null)
+            {
+                OutputStream outputStream = editor.newOutputStream(0);
+                bitmap.compress(Bitmap.CompressFormat.PNG,90,outputStream);
+                editor.commit();
+            }
+        }catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * 在磁盘中获取图片
+     * @param mDiskLruCache
+     * @param url
+     * @param imageView
+     * @return
+     */
+    public static boolean getBitmap(DiskLruCache mDiskLruCache, String url, ImageView imageView)
+    {
+        try {
+            Log.d("test","in getBitmap");
+            String key = hashKeyForDisk(url);
+            DiskLruCache.Snapshot snapShot = mDiskLruCache.get(key);
+            if (snapShot != null) {
+                InputStream is = snapShot.getInputStream(0);
+                Bitmap bitmap = BitmapFactory.decodeStream(is);
+                imageView.setImageBitmap(bitmap);
+                Log.d("test","getBitmap ok");
+                return true;
+            }else
+            {
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+}
+
+```
 
 # 前言
 自己有看小说的习惯，但是有时小说是否更新需要一遍遍的去刷新网页，耗时费神。最近一段时间忙于找实习面试看Android的一些知识。萌生了做一个提醒小说更新的app，顺便把最近看到学到的知识用上，既能方便自己又能巩固所学。
