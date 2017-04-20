@@ -2,6 +2,10 @@ package com.study.inovel.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,9 +18,14 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.study.inovel.R;
 import com.study.inovel.bean.Book;
+import com.study.inovel.util.CacheUtil;
 import com.study.inovel.util.NetworkState;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
+
+import libcore.io.DiskLruCache;
 
 /**
  * Created by dnw on 2017/3/31.
@@ -24,10 +33,15 @@ import java.util.List;
 public class UpdateAdapter extends BaseAdapter{
     public Context context;
     public List<Book> bookUpdateList;
+    Bitmap bitmap;
+    ViewHolder holder;
+    DiskLruCache diskLruCache;
     SharedPreferences sharedPreferences;
-    public UpdateAdapter(Context context, List<Book> list) {
+    int getPosition;
+    public UpdateAdapter(Context context, List<Book> list, DiskLruCache diskLruCache) {
         this.context=context;
         this.bookUpdateList=list;
+        this.diskLruCache=diskLruCache;
     }
 
     @Override
@@ -49,7 +63,7 @@ public class UpdateAdapter extends BaseAdapter{
     public View getView(int position, View convertView, ViewGroup parent) {
         sharedPreferences=PreferenceManager.getDefaultSharedPreferences(context);
         //Book book=(Book) getItem(position);
-        ViewHolder holder;
+
         View view;
         UpdateAdapter.this.notifyDataSetChanged();
         if(convertView==null)
@@ -70,8 +84,29 @@ public class UpdateAdapter extends BaseAdapter{
         }
         if(!sharedPreferences.getBoolean("no_picture_mode",true))
         {
+            getPosition=position;
             holder.book_img.setVisibility(View.VISIBLE);
-            Picasso.with(context).load("https:"+bookUpdateList.get(position).imgUrl).into(holder.book_img);
+            //先判断磁盘缓存中是否有图片，有图片则直接加载，无图片则从Picasso加载
+            if(!CacheUtil.getBitmap(diskLruCache,"https:"+bookUpdateList.get(getPosition).imgUrl,holder.book_img))
+            {
+                Log.d("test","getBitmap with Picasso");
+                Picasso.with(context).load("https:"+bookUpdateList.get(position).imgUrl).into(holder.book_img,new com.squareup.picasso.Callback(){
+                    @Override
+                    public void onSuccess() {
+                        //获取图片并缓存到磁盘
+                        bitmap=((BitmapDrawable)holder.book_img.getDrawable()).getBitmap();
+                        CacheUtil.saveBitmap(diskLruCache,"https:"+bookUpdateList.get(getPosition).imgUrl,bitmap);
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
+            }
+
+            //((BitmapDrawable)holder.book_img.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.PNG,90,out);
+
         }else
         {
             holder.book_img.setVisibility(View.GONE);
@@ -82,6 +117,8 @@ public class UpdateAdapter extends BaseAdapter{
         holder.info.setText(bookUpdateList.get(position).info);
         holder.update_title.setText(bookUpdateList.get(position).updateTitle);
         holder.update_time.setText(bookUpdateList.get(position).updateTime);
+
+
        return view;
     }
     class ViewHolder

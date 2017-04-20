@@ -1,11 +1,15 @@
 package com.study.inovel;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -34,16 +38,21 @@ import com.study.inovel.db.DatabaseUtil;
 import com.study.inovel.service.CacheService;
 import com.study.inovel.settings.SettingsPreferenceActivity;
 import com.study.inovel.util.AddNovelActivity;
+import com.study.inovel.util.CacheUtil;
 import com.study.inovel.util.Constant;
 import com.study.inovel.util.DelNovelActivity;
 import com.study.inovel.util.HtmlParserUtil;
 import com.study.inovel.util.NetworkState;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import libcore.io.DiskLruCache;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,AdapterView.OnItemClickListener{
     private ListView listView;
@@ -54,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DatabaseUtil databaseUtil;
     List<Book> list=new ArrayList<>();
     private long exitTime = 0;// 点击两次退出程序
-
+    DiskLruCache mDiskLruCache;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Handler handler=new Handler()
     {
@@ -74,6 +83,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_main);
+        try {
+            File cacheDir = CacheUtil.getDiskCacheDir(this, "bitmap");
+            if (!cacheDir.exists()) {
+                cacheDir.mkdirs();
+            }
+            mDiskLruCache = DiskLruCache.open(cacheDir, CacheUtil.getAppVersion(this), 1, 10 * 1024 * 1024);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         initView();
         databaseUtil=DatabaseUtil.getInstance(this);
         mNavigationView.setNavigationItemSelectedListener(this);
@@ -116,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
         listView=(ListView)findViewById(R.id.listView);
-        adapter=new UpdateAdapter(MainActivity.this,list);
+        adapter=new UpdateAdapter(MainActivity.this,list,mDiskLruCache);
         listView.setAdapter(adapter);
         swipeRefreshLayout=(SwipeRefreshLayout)findViewById(R.id.refreshLayout);
         //下拉刷新回调函数
