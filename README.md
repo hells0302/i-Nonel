@@ -6,11 +6,12 @@
 # 更新 增加图片缓存功能
 为了节省流量，在图片加载的增加缓存功能，这里使用的DiskLruCache缓存到本地存储，而未使用Picasso的自带缓存。<br>
 因为DiskLruCache不是包含在AndroidAPI中，需要手动下载<br>
-下载地址：
-[DiskLruCache类获取地址]( android.googlesource.com/platform/libcore/+/jb-mr2-release/luni/src/main/java/libcore/io/DiskLruCache.java)
+下载地址：(需要使用google)
+[DiskLruCache类获取地址](https://android.googlesource.com/platform/libcore/+/jb-mr2-release/luni/src/main/java/libcore/io/DiskLruCache.java)<br>
+[无法打开google，点击这里获取](https://hells0302.github.io/2017/04/20/DiskLruCache/)<br>
 DiskLruCache具体使用在Android官方教程中说的很清楚，这里不再叙述。<br>
 这里是Android官网关于图片缓存的资料，包含内存缓存*Use a Memory Cache*和磁盘缓存*Use a Disk Cache*
-[android图片缓存官方资料](https://developer.android.com/topic/performance/graphics/cache-bitmap.html?)
+[android图片缓存官方资料](https://developer.android.com/topic/performance/graphics/cache-bitmap.html?)<br>
 在小说更新详情UpdateAdapter类中，先判断本地缓存是否有图片，有图片则直接加载，无图片则从Picasso加载<br>
 ```
  //先判断磁盘缓存中是否有图片，有图片则直接加载，无图片则从Picasso加载
