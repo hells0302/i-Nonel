@@ -57,8 +57,10 @@ public class CacheService extends Service {
                         {
                             CacheBook book2=listDb.get(j);
                             //书名相同之后比较两书的更新时间，不同发出更新通知
+
                             if(book1.cacheBookName.equals(book2.cacheBookName))
                             {
+                                Log.d("test",book1.cacheBookName+">>"+book1.cacheUpdateTitle+">>"+book1.cacheUpdateTime+"  "+book2.cacheBookName+">>"+book2.cacheUpdateTitle+">>"+book2.cacheUpdateTime);
                                 if(!book1.cacheUpdateTime.equals(book2.cacheUpdateTime))
                                 {
                                     //此处发出更新通知
@@ -83,7 +85,7 @@ public class CacheService extends Service {
                                     {
                                         builder.setDefaults(Notification.DEFAULT_LIGHTS);
                                     }
-                                    if(sharedPreferences.getBoolean("sound_mode",false))
+                                    if(sharedPreferences.getBoolean("sound_mode",true))
                                     {
                                         builder.setDefaults(Notification.DEFAULT_SOUND);
                                     }
@@ -130,6 +132,7 @@ public class CacheService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Log.d("test","in Thread");
                 cacheRefresh();
                 handler.sendEmptyMessage(0x234);
             }
@@ -139,6 +142,7 @@ public class CacheService extends Service {
         AlarmManager manager=(AlarmManager)getSystemService(ALARM_SERVICE);
         long triggerAtTime= SystemClock.elapsedRealtime()+setMin*anMin;
         Intent i=new Intent(this,AlarmReceiver.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pi=PendingIntent.getBroadcast(this,0,i,0);
         int currentVersion=Build.VERSION.SDK_INT;
 

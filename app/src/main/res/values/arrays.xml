@@ -5,14 +5,14 @@
         <item>起点</item>
     </string-array>
     <string-array name="time_to_refresh_pots">
-        <item>10分钟</item>
+        <item>5分钟</item>
         <item>30分钟</item>
         <item>1小时</item>
         <item>6小时</item>
         <item>12小时</item>
     </string-array>
     <string-array name="time_to_refresh">
-        <item>10</item>
+        <item>5</item>
         <item>30</item>
         <item>60</item>
         <item>360</item>
