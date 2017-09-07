@@ -60,6 +60,7 @@
                 android:id="@+id/info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="marquee"
                 android:singleLine="true"
                 android:text="在破败中崛起，在寂灭中复苏。沧海成尘，雷电枯竭……"/>
             <LinearLayout
@@ -73,11 +74,12 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/updateTextColor"
                     android:text="最近更新："/>
-                <TextView
+                <com.study.inovel.view.MyTextView
                     android:layout_gravity="bottom"
                     android:id="@+id/update_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+
                     android:singleLine="true"
                     android:textColor="@color/updateTextColor"
                     android:text="第三百零六章 难解"/>

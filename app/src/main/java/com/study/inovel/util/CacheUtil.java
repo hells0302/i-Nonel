@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
@@ -37,6 +38,7 @@ public class CacheUtil {
         }
         return new File(cachePath + File.separator + uniqueName);
     }
+
 
     /**
      * 获取版本号

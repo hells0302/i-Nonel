@@ -1,15 +1,11 @@
 package com.study.inovel;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -23,7 +19,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -35,18 +30,17 @@ import com.study.inovel.about.About;
 import com.study.inovel.adapter.UpdateAdapter;
 import com.study.inovel.bean.Book;
 import com.study.inovel.db.DatabaseUtil;
+import com.study.inovel.innerBrowser.InnerBrowserActivity;
 import com.study.inovel.service.CacheService;
 import com.study.inovel.settings.SettingsPreferenceActivity;
 import com.study.inovel.util.AddNovelActivity;
 import com.study.inovel.util.CacheUtil;
-import com.study.inovel.util.Constant;
 import com.study.inovel.util.DelNovelActivity;
 import com.study.inovel.util.HtmlParserUtil;
 import com.study.inovel.util.NetworkState;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -64,7 +58,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     List<Book> list=new ArrayList<>();
     private long exitTime = 0;// 点击两次退出程序
     DiskLruCache mDiskLruCache;
+    private final Object mDiskCacheLock=new Object();
     private SwipeRefreshLayout swipeRefreshLayout;
+    SharedPreferences sharedPreferences;
     private Handler handler=new Handler()
     {
         @Override
@@ -89,7 +85,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 cacheDir.mkdirs();
             }
             mDiskLruCache = DiskLruCache.open(cacheDir, CacheUtil.getAppVersion(this), 1, 10 * 1024 * 1024);
-        } catch (IOException e) {
+            //new InitDiskCacheTask().execute(cacheDir);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         initView();
@@ -101,7 +98,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     }
-
+    class InitDiskCacheTask extends AsyncTask<File, Void, Void> {
+        @Override
+        protected Void doInBackground(File... params) {
+            synchronized (mDiskCacheLock) {
+                File cacheDir = params[0];
+                try
+                {
+                    mDiskLruCache = DiskLruCache.open(cacheDir, CacheUtil.getAppVersion(MainActivity.this), 1, 10 * 1024 * 1024);
+                }catch(IOException e)
+                {
+                    e.printStackTrace();
+                }
+                //mDiskCacheStarting = false; // 结束初始化
+                mDiskCacheLock.notifyAll(); // 唤醒等待线程
+            }
+            return null;
+        }
+    }
 
 
     /**
@@ -118,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void initView()
     {
-
+        sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         drawerLayout=(DrawerLayout)findViewById(R.id.drawer_layout);
         mNavigationView=(NavigationView)findViewById(R.id.nav_view);
         //启动toolbar代替默认的toolbar
@@ -345,19 +359,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             refresh();
         }
     }
-
+    /*
+    *ListView 的点击事件
+     */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                 Log.d("Test",list.get(i).bookName);
                 Uri uri=Uri.parse("https://m.baidu.com/s?from=1086k&word="+list.get(i).bookName);
-
-                Intent intent1 = new Intent(Intent.ACTION_VIEW,uri);
-                String title = "选择浏览器";
-                if(intent1.resolveActivity(getPackageManager())!=null)
-                {
-                    startActivity(Intent.createChooser(intent1,title));
+                boolean openWithInnerBrowser=sharedPreferences.getBoolean("innerBrowser",false);
+                if(openWithInnerBrowser){
+                    Intent intent0=new Intent(this, InnerBrowserActivity.class);
+                    intent0.putExtra("url","https://m.baidu.com/s?from=1086k&word="+list.get(i).bookName);
+                    startActivity(intent0);
+                }else{
+                    Intent intent1 = new Intent(Intent.ACTION_VIEW,uri);
+                    String title = "选择浏览器";
+                    if(intent1.resolveActivity(getPackageManager())!=null)
+                    {
+                        startActivity(Intent.createChooser(intent1,title));
+                    }
                 }
+
     }
 
     /**

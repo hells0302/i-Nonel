@@ -17,18 +17,23 @@
         <activity android:name=".MainActivity" android:configChanges="uiMode|keyboard|keyboardHidden|orientation|screenSize|fontScale"
             android:launchMode="singleTask"
           >
+
+        </activity>
+        <activity android:name=".WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".GuideActivity"/>
         <activity android:name=".util.AddNovelActivity" android:excludeFromRecents="true"/>
         <activity android:name=".settings.SettingsPreferenceActivity" android:excludeFromRecents="true"/>
         <activity android:name=".util.DelNovelActivity" android:excludeFromRecents="true"/>
         <activity android:name=".about.About" android:excludeFromRecents="true"/>
         <service android:name=".service.CacheService"/>
         <receiver android:name=".broadcast.AlarmReceiver"/>
+        <activity android:name=".innerBrowser.InnerBrowserActivity"/>
     </application>
 
 </manifest>

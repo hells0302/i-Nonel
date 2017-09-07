@@ -9,6 +9,11 @@
             android:key="no_picture_mode"
             android:defaultValue="false"
             android:summary="首页不显示小说图片" />
+        <CheckBoxPreference
+            android:title="使用内部浏览器"
+            android:key="innerBrowser"
+            android:defaultValue="false"
+            android:summary="搜索小说时，使用内部浏览器" />
 
         <ListPreference
             android:title="刷新时间"

@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.study.inovel.util.CrashHandler;
+
 /**
  * Created by dnw on 2017/4/1.
  */
@@ -19,6 +21,9 @@ public class App extends Application {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
         context=getApplicationContext();
+        CrashHandler crashHandler=CrashHandler.getInstance();
+        crashHandler.init(this);
+
     }
     public static Context getContext()
     {

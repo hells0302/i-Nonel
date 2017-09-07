@@ -3,9 +3,7 @@ package com.study.inovel.adapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,10 +17,7 @@ import com.squareup.picasso.Picasso;
 import com.study.inovel.R;
 import com.study.inovel.bean.Book;
 import com.study.inovel.util.CacheUtil;
-import com.study.inovel.util.NetworkState;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 import libcore.io.DiskLruCache;
@@ -82,7 +77,7 @@ public class UpdateAdapter extends BaseAdapter{
             view=convertView;
             holder=(ViewHolder) view.getTag();
         }
-        if(!sharedPreferences.getBoolean("no_picture_mode",true))
+        if(!sharedPreferences.getBoolean("no_picture_mode",false))
         {
             getPosition=position;
             holder.book_img.setVisibility(View.VISIBLE);
@@ -94,8 +89,12 @@ public class UpdateAdapter extends BaseAdapter{
                     @Override
                     public void onSuccess() {
                         //获取图片并缓存到磁盘
-                        bitmap=((BitmapDrawable)holder.book_img.getDrawable()).getBitmap();
-                        CacheUtil.saveBitmap(diskLruCache,"https:"+bookUpdateList.get(getPosition).imgUrl,bitmap);
+                        if(holder.book_img.getDrawable()!=null)
+                        {
+                            bitmap=((BitmapDrawable)holder.book_img.getDrawable()).getBitmap();
+                            CacheUtil.saveBitmap(diskLruCache,"https:"+bookUpdateList.get(getPosition).imgUrl,bitmap);
+                        }
+
                     }
 
                     @Override

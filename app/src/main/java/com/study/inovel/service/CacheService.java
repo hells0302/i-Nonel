@@ -61,7 +61,7 @@ public class CacheService extends Service {
                             if(book1.cacheBookName.equals(book2.cacheBookName))
                             {
                                 Log.d("test",book1.cacheBookName+">>"+book1.cacheUpdateTitle+">>"+book1.cacheUpdateTime+"  "+book2.cacheBookName+">>"+book2.cacheUpdateTitle+">>"+book2.cacheUpdateTime);
-                                if(!book1.cacheUpdateTime.equals(book2.cacheUpdateTime))
+                                if(!book1.cacheUpdateTitle.equals(book2.cacheUpdateTitle))
                                 {
                                     //此处发出更新通知
                                     Intent intent=new Intent(CacheService.this, MainActivity.class);
@@ -153,7 +153,7 @@ public class CacheService extends Service {
             manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pi);
         }
 
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
     private void cacheRefresh()
     {
