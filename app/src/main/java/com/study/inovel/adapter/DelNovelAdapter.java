@@ -3,6 +3,7 @@ package com.study.inovel.adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ public class DelNovelAdapter extends BaseAdapter {
     private List<String> list;
     private Context context;
     DatabaseUtil databaseUtil;
-    private int location;
+
     public DelNovelAdapter(Context context,List<String> list,DatabaseUtil databaseUtil) {
         this.context=context;
         this.list=list;
@@ -46,10 +47,10 @@ public class DelNovelAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, final View convertView, ViewGroup viewGroup) {
-        ViewHolder holder;
+    public View getView(final int i, final View convertView, ViewGroup viewGroup) {
+        final ViewHolder holder;
+
         View view;
-        location=i;
         if(convertView==null)
         {
             view= LayoutInflater.from(context).inflate(R.layout.layout_del_novel_item,null);
@@ -62,20 +63,24 @@ public class DelNovelAdapter extends BaseAdapter {
             view=convertView;
             holder=(ViewHolder)view.getTag();
         }
+        final int location=i;
         holder.novelName.setText(list.get(i));
         holder.delNovel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder=new AlertDialog.Builder(context);
-                builder.setMessage("确定要删除？");
+                Log.d("xyz", "onClick: "+i+list.get(location).toString());
+                final String name=list.get(location).toString();
+                builder.setMessage("确定要删除《"+name+"》？");
+
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //删除数据库中的记录
-                        if(databaseUtil.delNovelLinkElement(list.get(location)))
+                        if(databaseUtil.delNovelLinkElement(name))
                         {
 
-                            Toast.makeText(context,"删除"+list.get(location)+"成功",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context,"删除"+name+"成功",Toast.LENGTH_SHORT).show();
                             list.remove(location);
                             DelNovelAdapter.this.notifyDataSetChanged();
                         }
